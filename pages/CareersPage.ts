@@ -19,12 +19,12 @@ export class CareersPage extends BasePage {
     if (await this.viewJobsLink.first().isVisible()) {
       await this.viewJobsLink.first().click();
     }
-    
+
     await this.waitForVisible(this.jobsBlock.first(), 15000);
-    
+
     // Scroll to bottom to ensure all lazy loaded cards are rendered
     await this.page.evaluate(() => window.scrollTo(0, document.body.scrollHeight));
-    
+
     // Check stability using a more robust way rather than arbitrary timeout
     // Wait for at least one job card to be visible
     await this.waitForVisible(this.jobCards.first(), 15000);
@@ -32,22 +32,26 @@ export class CareersPage extends BasePage {
 
   async getJobCount(): Promise<number> {
     await this.ensureJobsInView();
-    // Use expect.poll for dynamic stability
-    await expect.poll(async () => {
-      const count = await this.jobCards.count();
-      return count > 0;
-    }, { timeout: 10000, message: 'Wait for job cards to render' }).toBeTruthy();
 
-    return await this.jobCards.count();
+    // Auto-retry until count is structurally stable and > 0 (prevents React/Vue DOM remount flakiness)
+    let finalCount = 0;
+    await expect(async () => {
+      finalCount = await this.jobCards.count();
+      expect(finalCount).toBeGreaterThan(0);
+    }).toPass({ timeout: 15000 });
+
+    return finalCount;
   }
 
   async getAllTitles(): Promise<string[]> {
     await this.ensureJobsInView();
-    // Wait for elements to be fully populated
-    await expect.poll(async () => {
-      return (await this.jobCards.count()) > 0;
-    }, { timeout: 10000 }).toBeTruthy();
-    
-    return await this.jobCards.allInnerTexts();
+
+    let titles: string[] = [];
+    await expect(async () => {
+      titles = await this.jobCards.allInnerTexts();
+      expect(titles.length).toBeGreaterThan(0);
+    }).toPass({ timeout: 15000 });
+
+    return titles;
   }
 }
