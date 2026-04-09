@@ -1,0 +1,47 @@
+{
+  "name": "osapiens-qa-framework",
+  "version": "1.0.0",
+  "description": "Playwright E2E framework for osapiens",
+  "main": "index.js",
+  "scripts": {
+    "test": "playwright test",
+    "test:ui": "playwright test --ui",
+    "test:headed": "playwright test --headed",
+    "test:chromium": "playwright test --project=chromium",
+    "report": "playwright show-report",
+    "lint": "eslint . --ext .ts",
+    "lint:fix": "eslint . --ext .ts --fix",
+    "format": "prettier --write \"**/*.ts\"",
+    "prepare": "husky"
+  },
+  "keywords": [
+    "playwright",
+    "e2e",
+    "testing",
+    "osapiens"
+  ],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "@playwright/test": "^1.42.0",
+    "@types/node": "^20.11.24",
+    "@typescript-eslint/eslint-plugin": "^7.1.1",
+    "@typescript-eslint/parser": "^7.1.1",
+    "dotenv": "^16.4.5",
+    "eslint": "^8.57.0",
+    "eslint-config-prettier": "^9.1.0",
+    "eslint-plugin-playwright": "^1.5.1",
+    "prettier": "^3.2.5",
+    "typescript": "^5.3.3",
+    "@faker-js/faker": "^8.4.1",
+    "husky": "^9.0.11",
+    "lint-staged": "^15.2.2",
+    "zod": "^3.22.4"
+  },
+  "lint-staged": {
+    "*.ts": [
+      "eslint --fix",
+      "prettier --write"
+    ]
+  }
+}
