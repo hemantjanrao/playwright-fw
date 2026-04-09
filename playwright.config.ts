@@ -1,5 +1,5 @@
 import { defineConfig, devices } from '@playwright/test';
-import * as path from 'path';
+
 import { env } from './utils/env';
 
 export default defineConfig({
@@ -19,10 +19,7 @@ export default defineConfig({
   /* Opt out of parallel tests on CI. */
   workers: process.env.CI ? 1 : undefined,
   /* Reporter to use. See https://playwright.dev/docs/test-reporters */
-  reporter: [
-    ['html', { open: 'never' }],
-    ['list']
-  ],
+  reporter: [['html', { open: 'never' }], ['list']],
   /* Shared settings for all the projects below. */
   use: {
     /* Base URL to use in actions like `await page.goto('/')`. */

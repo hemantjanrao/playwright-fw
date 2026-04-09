@@ -2,14 +2,11 @@ import { test, expect } from '../../fixtures/test-base';
 import { faker } from '@faker-js/faker';
 
 test.describe('osapiens Career Page Validation @careers @e2e', () => {
-
   test('should verify open positions and validate "Quality" roles exist', async ({ page, careersPage }) => {
-    
     // Intercept API call to validate backend matches UI
-    const apiResponsePromise = page.waitForResponse(
-      (response) => response.url().includes('/api/') && response.status() === 200,
-      { timeout: 10000 }
-    ).catch(() => null);
+    const apiResponsePromise = page
+      .waitForResponse(response => response.url().includes('/api/') && response.status() === 200, { timeout: 10000 })
+      .catch(() => null);
 
     await test.step('Navigate to careers page', async () => {
       await careersPage.navigate();
@@ -27,32 +24,31 @@ test.describe('osapiens Career Page Validation @careers @e2e', () => {
       const hasQualityJob = titles.some(title => title.includes('Quality'));
 
       // Use a custom message for better debugging in CI
-      expect(hasQualityJob, 
+      expect(
+        hasQualityJob,
         `Validation Failed: Expected at least one job title to contain "Quality". Titles found: [${titles.join(', ')}]`
       ).toBe(true);
     });
 
-    await test.step('Validate Backend API matches expectations', async () => {
+    await test.step('Validate Backend API matched expectations if intercepted', async () => {
+      // ESLint Playwright discourages conditionals in tests.
+      // Since it's an optional API interception for this frontend test, we use a structured log payload.
       const apiResponse = await apiResponsePromise;
-      if (apiResponse) {
-        console.log('Backend API fired correctly indicating dynamic loading.');
-      } else {
-        console.warn('API Response interception timed out. Endpoint may vary.');
-      }
+      console.log('Intercepted API details:', apiResponse ? 'Found 200 OK Response' : 'Timed out');
     });
   });
 
-  test('should demonstrate robust data generation using faker for job application forms', async ({ careersPage }) => {
+  test('should demonstrate robust data generation using faker for job application forms', async () => {
     // Note: Since this is just a take home, we might not have access to submit real forms,
     // but demonstrating faker usage is critical for senior QA roles.
-    
+
     const applicant = {
       firstName: faker.person.firstName(),
       lastName: faker.person.lastName(),
       email: faker.internet.email({ provider: 'test.osapiens.com' }),
       phone: faker.phone.number(),
       linkedIn: `https://linkedin.com/in/${faker.internet.userName()}`,
-      motivation: faker.lorem.paragraph()
+      motivation: faker.lorem.paragraph(),
     };
 
     await test.step(`Generate dynamic test data for applicant: ${applicant.email}`, async () => {
@@ -63,5 +59,4 @@ test.describe('osapiens Career Page Validation @careers @e2e', () => {
       // await careersPage.submitApplication();
     });
   });
-
 });
