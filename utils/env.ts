@@ -1,12 +1,20 @@
 import { z } from 'zod';
 import * as dotenv from 'dotenv';
+import * as path from 'path';
 
-// Load environment variables from .env file
+// 1. Determine which environment we are running in. Defaults to 'develop'
+const ENVIRONMENT = process.env.TEST_ENV || 'develop';
+
+// 2. Dynamically load the correct .env file based on the environment
+const rootDir = path.resolve(__dirname, '..');
+dotenv.config({ path: path.resolve(rootDir, `.env.${ENVIRONMENT}`) });
+
+// 3. Load standard .env as a fallback for global secrets
 dotenv.config();
 
 // Define exactly what the environment variables should look like
 const envSchema = z.object({
-  BASE_URL: z.string().url().default('https://careers.osapiens.com'),
+  BASE_URL: z.string().url(),
   CI: z.string().optional(),
   // Add more dynamic environment variables here as the framework grows
   // For example:
