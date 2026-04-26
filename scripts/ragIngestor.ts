@@ -18,10 +18,8 @@ interface RAGDocument {
   embedding: number[];
 }
 
-async function getEmbedding(
-  text: string,
-  extractor: (input: string, options: Record<string, unknown>) => Promise<{ data: Float32Array }>
-): Promise<number[]> {
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+async function getEmbedding(text: string, extractor: any): Promise<number[]> {
   // Extract embeddings
   const output = await extractor(text, { pooling: 'mean', normalize: true });
   return Array.from(output.data);
